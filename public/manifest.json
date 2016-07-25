@@ -1,0 +1,16 @@
+{
+  "name": "Kitten Explorer",
+  "short_name": "KXP",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "black",
+  "background_color": "black",
+  "icons": [
+    {
+      "src": "/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    }
+  ]
+}
