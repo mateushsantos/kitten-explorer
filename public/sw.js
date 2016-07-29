@@ -1,5 +1,5 @@
 var staticCacheName = 'gatinhos-v1';
-var savedCacheCats = 'saved-gatinhos-v1';
+var savedCacheCats = 'saved-gatinhos-v1.0';
 
 self.addEventListener('install', function (event) {
    event.waitUntil(

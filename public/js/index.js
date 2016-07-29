@@ -103,7 +103,7 @@ var gatinho = {
 		var gatos = localStorage.getItem('gatosQueApareceram').split('|');
 
 		for(var i = 0; i < gatos.length; i++) {
-			$("#mainContent").append("<img class='' src='/images/gatos/" + gatos[i] + "' />");
+			$("#mainContent").append("<img class='imagem-gato soltaOsGato' src='/images/gatos/" + gatos[i] + "' />");
 		}         
 	}
 }
