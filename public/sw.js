@@ -1,7 +1,5 @@
 var staticCacheName = 'gatinhos-v1';
-var staticCacheImageName = 'gatinhos-image-v1';
-var savedCacheCats = 'saved-gatinhos';
-var arrGatos = [];
+var savedCacheCats = 'saved-gatinhos-v1';
 
 self.addEventListener('install', function (event) {
    event.waitUntil(
@@ -27,34 +25,28 @@ self.addEventListener('activate', function (event) {
                       cacheName != staticCacheName;
             }).map(function (cacheName) {
                return caches.delete(cacheName);
+            }),
+            cacheNames.filter(function (cacheName) {
+               return cacheName.startsWith('saved-gatinhos-') &&
+                      cacheName != savedCacheCats;
+            }).map(function (cacheName) {
+               return caches.delete(cacheName);
             })
          )
       })
    );
 });
-///
+//
 self.addEventListener('fetch', function(event) {
    var fetched;
-   
-   if(event.request.url.endsWith('meda/novos/gatos')) {
-        var imagemDoGato;
-        caches.open(savedCacheCats).then(function (cache) {
-            cache.add()
-        })
-   }
 
    if(event.request.url.endsWith(".jpg")) {
       fetched = fetch(event.request).then(function (response) {
-         caches.open(staticCacheImageName).then(function (cache) {
-            cache.add(event.request);
-         });         
-         self.postMessage({
-                           action: 'addCats',
-                           url: event.request.url   
-                        });
+         caches.open(savedCacheCats).then(function (cache) {
+            cache.add(event.request.url);
+         });     
          
-         return response;
-         
+         return response;         
       }).catch(function () {
          return caches.match('http://localhost:8080/images/no-internet-cat.jpg');
       });
@@ -62,17 +54,34 @@ self.addEventListener('fetch', function(event) {
       event.respondWith(fetched);
       return;
    }
-   
-   event.respondWith(
-      caches.match(event.request).then(function(response) {
-         return response || fetch(event.request)
-      })
-   );
+   else {
+    event.respondWith(
+        caches.match(event.request).then(function(response) {
+            return response || fetch(event.request)
+        })
+    );
+   }
 });
 
-//
+// 
 self.addEventListener('message', function (event) {
    if (event.data.action == 'skipWaiting') {
       self.skipWaiting();
    }
 });
+
+function sendMessageToClient(client, msg){
+    return new Promise(function(resolve, reject){
+        var msg_chan = new MessageChannel();
+
+        msg_chan.port1.onmessage = function(event){
+            if(event.data.error){
+                reject(event.data.error);
+            }else{
+                resolve(event.data);
+            }
+        };
+
+        client.postMessage(msg, [msg_chan.port2]);
+    });
+}

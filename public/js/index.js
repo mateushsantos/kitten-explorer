@@ -1,8 +1,6 @@
 (function () {
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js', {scope: '/'}).then(function(registration) {
-    // Registration was successful
-    console.log('ServiceWorker registration successful with scope: ',    registration.scope);
     
     if (!navigator.serviceWorker.controller) {
     	return;
@@ -23,10 +21,14 @@ if ('serviceWorker' in navigator) {
     registration.addEventListener('updatefound', function () {
     	gatinho.veEstadoDaAtualizacao(registration.installing);
     });
+
+	gatinho.renderizaGatos(registration.active);
+
+    console.log('ServiceWorker registration successful with scope: ',    registration.scope);
     
   }).catch(function(err) {
     // registration failed :(
-    console.log('ServiceWorker registration failed: ', err);
+    console.error('ServiceWorker registration failed: ', err);
   });
   
    navigator.serviceWorker.addEventListener('controllerchange', function () {
@@ -40,6 +42,7 @@ var setGatos;
 var gatinho = {
 	init: function () {
 		this.addEvents();
+		this.renderizaGatos();
 	},
 	addEvents: function () {
 		document.querySelector(".soltaOsGato").addEventListener('click', function() {
@@ -52,9 +55,21 @@ var gatinho = {
 				setGatos = setInterval(function () {
 					
 					var mainContent = document.getElementById("mainContent");
+					var catImageName = Math.floor(Math.random() * 9);
+
+					var gatos = localStorage.getItem('gatosQueApareceram');
+
+					if (gatos === "")
+						gatos += catImageName + ".jpg";
+					else
+						gatos += "|" + catImageName + ".jpg";
+
+					localStorage.setItem('gatosQueApareceram', gatos);
+
 					var a = document.createElement('IMG');
-					a.setAttribute('src', 'https://thecatapi.com/api/images/get?format=src&type=gif');
+					a.setAttribute('src', '/images/gatos/' + catImageName + '.jpg');
 					a.setAttribute('class', 'soltaOsGato');
+					a.setAttribute('class', 'imagem-gato');					
 					a.style.opacity = 0;
 					
 					mainContent.appendChild(a);	
@@ -80,9 +95,16 @@ var gatinho = {
 		});
   	worker.addEventListener('statechange', function() {
     	if (worker.state == 'installed') {
-      	gatinho.novaVersaoPronta();
+      		gatinho.novaVersaoPronta();
     	}
 	  });
+	},
+	renderizaGatos: function () {
+		var gatos = localStorage.getItem('gatosQueApareceram').split('|');
+
+		for(var i = 0; i < gatos.length; i++) {
+			$("#mainContent").append("<img class='' src='/images/gatos/" + gatos[i] + "' />");
+		}         
 	}
 }
 

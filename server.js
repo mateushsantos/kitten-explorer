@@ -35,5 +35,5 @@ app.use(function(req, res, next) {
 
 
 server.listen(8080, function(){
-  console.log("Let the gatos in the Floor");
+  console.log("Let the gatos hit the Floor");
 });

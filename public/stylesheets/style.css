@@ -56,3 +56,7 @@ body {
 .hidden {
 	display: none;
 }
+
+.imagem-gato {
+	width: 200px;
+}
