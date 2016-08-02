@@ -22,8 +22,6 @@ if ('serviceWorker' in navigator) {
     	gatinho.veEstadoDaAtualizacao(registration.installing);
     });
 
-	gatinho.renderizaGatos(registration.active);
-
     console.log('ServiceWorker registration successful with scope: ',    registration.scope);
     
   }).catch(function(err) {
@@ -68,8 +66,7 @@ var gatinho = {
 
 					var a = document.createElement('IMG');
 					a.setAttribute('src', '/images/gatos/' + catImageName + '.jpg');
-					a.setAttribute('class', 'soltaOsGato');
-					a.setAttribute('class', 'imagem-gato');					
+					a.setAttribute('class', 'soltaOsGato imagem-gato reset-gato');			
 					a.style.opacity = 0;
 					
 					mainContent.appendChild(a);	
@@ -83,6 +80,15 @@ var gatinho = {
 		document.getElementById('cancelar').addEventListener('click', function () {
 			var novaVersao = document.getElementById('novaVersaoPronta');
 			novaVersao.classList.add('hidden');
+		});
+
+		document.getElementById('resetaGatos').addEventListener('click', function () {
+			localStorage.setItem('gatosQueApareceram', '');
+			var gatosParaResetar = document.querySelectorAll('.reset-gato');
+			for (var i = 0; i < gatosParaResetar.length; i++) { 
+				var resetGato = gatosParaResetar[i]; 
+				resetGato.remove();
+			}
 		});
 	},
 	novaVersaoPronta : function () {
@@ -100,11 +106,16 @@ var gatinho = {
 	  });
 	},
 	renderizaGatos: function () {
-		var gatos = localStorage.getItem('gatosQueApareceram').split('|');
+		if (!(localStorage.getItem('gatosQueApareceram') === "")) {
+			var gatos = localStorage.getItem('gatosQueApareceram').split('|');
 
-		for(var i = 0; i < gatos.length; i++) {
-			$("#mainContent").append("<img class='imagem-gato soltaOsGato' src='/images/gatos/" + gatos[i] + "' />");
-		}         
+			for(var i = 0; i < gatos.length; i++) {
+				$("#mainContent").append("<img class='imagem-gato soltaOsGato reset-gato' src='/images/gatos/" + gatos[i] + "' />");
+			} 
+		}       
+	},
+	resetaGatosNoCache: function () {
+		navigator.serviceWorker.controller.postMessage({action: 'resetaGatosNoCache'});
 	}
 }
 

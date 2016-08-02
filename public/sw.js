@@ -1,4 +1,4 @@
-var staticCacheName = 'gatinhos-v1';
+var staticCacheName = 'gatinhos-v1.6';
 var savedCacheCats = 'saved-gatinhos-v1.0';
 
 self.addEventListener('install', function (event) {
@@ -65,19 +65,22 @@ self.addEventListener('fetch', function(event) {
 
 // 
 self.addEventListener('message', function (event) {
-   if (event.data.action == 'skipWaiting') {
+   if (event.data.action === 'skipWaiting') {
       self.skipWaiting();
+   }
+   if (event.data.action === 'resetaGatosNoCache') {
+       caches.delete(savedCacheCats);
    }
 });
 
-function sendMessageToClient(client, msg){
-    return new Promise(function(resolve, reject){
+function sendMessageToClient(client, msg) {
+    return new Promise(function(resolve, reject) {
         var msg_chan = new MessageChannel();
 
         msg_chan.port1.onmessage = function(event){
             if(event.data.error){
                 reject(event.data.error);
-            }else{
+            } else{
                 resolve(event.data);
             }
         };
